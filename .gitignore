@@ -170,4 +170,5 @@ cython_debug/
 *.pdf
 *.docx
 
-html-files/
+html_files/
+text_files/
