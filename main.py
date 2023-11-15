@@ -1,6 +1,13 @@
-def main(max_files: int = 10):
-    pass
+from scrapy.crawler import CrawlerProcess
+from P4.spiders.ConcordiaSpider import MainSpider
+
+
+def main():
+    process = CrawlerProcess()
+
+    process.crawl(MainSpider)
+    process.start()
 
 
 if __name__ == '__main__':
-    main(max_files=10)
+    main()
