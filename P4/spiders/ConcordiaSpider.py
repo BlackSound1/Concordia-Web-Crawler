@@ -2,6 +2,7 @@ import logging
 
 import scrapy
 from pathlib import Path
+from urllib.parse import urljoin
 
 
 class MainSpider(scrapy.Spider):
@@ -26,7 +27,7 @@ class MainSpider(scrapy.Spider):
         self.log(f"On {page}, found {len(links)} links in total", level=logging.INFO)
 
         # From these links, get all links that stay on Concordia.ca that aren't just '/'
-        concordia_links = [link for link in links if link.startswith('/') and link != '/']
+        concordia_links = [urljoin(response.url, link) for link in links if link.startswith('/') and link != '/']
 
         self.log(f"From all links found on {page}, found {len(concordia_links)} Concordia links",
                  level=logging.INFO)
