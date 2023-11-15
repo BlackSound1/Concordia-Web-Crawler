@@ -10,6 +10,8 @@ def crawl(*processes: CrawlerProcess):
     """
     A callback generator function to define how the CrawlerProcesses are called.
 
+    Inspired by https://stackoverflow.com/q/62252561 and https://stackoverflow.com/a/62254841.
+
     :param processes: 1 or more CrawlerProcesses. Must have a concordia process and link process,
                       but allows for extensibility.
     :return: The results of each spider crawl
