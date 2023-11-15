@@ -1,6 +1,6 @@
-def main():
+def main(max_files: int = 10):
     pass
 
 
 if __name__ == '__main__':
-    main()
+    main(max_files=10)
