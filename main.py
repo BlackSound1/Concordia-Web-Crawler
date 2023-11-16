@@ -18,7 +18,7 @@ def crawl(*processes: CrawlerProcess):
     """
 
     # Crawl with the concordia spider
-    yield processes[0].crawl(MainSpider)
+    yield processes[0].crawl(MainSpider, max_files=10)
 
     # Get all the links to traverse the links spider with
     with open('text_files/concordia_links.txt', 'rt') as f:

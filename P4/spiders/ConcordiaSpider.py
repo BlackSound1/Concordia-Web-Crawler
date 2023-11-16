@@ -13,6 +13,7 @@ class MainSpider(scrapy.Spider):
 
     name = 'concordia'  # Set this spider's name
     start_urls = ['https://www.concordia.ca']  # Set this spider's URLs to crawl from
+    max_files = None
 
     @classmethod
     def update_settings(cls, settings):
@@ -52,14 +53,21 @@ class MainSpider(scrapy.Spider):
 
         # Get all links on Concordia.ca
         links = response.css("a::attr(href)").extract()
+
         self.log(f"On {page}, found {len(links)} links in total", level=logging.INFO)
 
         # From these links, get all links that stay on Concordia.ca, that aren't just '/'
-        concordia_links = [urljoin(response.url, link) for link in links if link.startswith('/') and link != '/']
+        concordia_links = [urljoin(response.url, link) for link in links if
+                           link.startswith('/') and link != '/' and not link.startswith('#')]
         self.log(f"From all links found on {page}, found {len(concordia_links)} Concordia links",
                  level=logging.INFO)
 
-        # Write them to file
+        # If there is a valid max_files number specified, reduce the amount of links to parse to the first
+        # max_files of them
+        if self.max_files is not None and self.max_files >= 0:
+            concordia_links = concordia_links[: self.max_files]
+
+        # Write the final list of urls to file
         self.log(f'Writing Concordia links to P4/concordia_links.txt', level=logging.INFO)
         Path('text_files').mkdir(exist_ok=True, parents=True)
         with open('text_files/concordia_links.txt', 'wt') as f:
