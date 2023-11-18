@@ -1,46 +1,28 @@
+from pathlib import Path
+
 from scrapy.crawler import CrawlerProcess
-from twisted.internet import reactor, defer
 
-from P4.spiders.ConcordiaSpider import MainSpider
-from P4.spiders.LinkSpider import LinkSpider
-
-
-@defer.inlineCallbacks
-def crawl(*processes: CrawlerProcess):
-    """
-    A callback generator function to define how the CrawlerProcesses are called.
-
-    Inspired by https://stackoverflow.com/q/62252561 and https://stackoverflow.com/a/62254841.
-
-    :param processes: 1 or more CrawlerProcesses. Must have a concordia process and link process,
-                      but allows for extensibility.
-    :return: The results of each spider crawl
-    """
-
-    # Crawl with the concordia spider
-    yield processes[0].crawl(MainSpider, max_files=10)
-
-    # Get all the links to traverse the links spider with
-    with open('text_files/concordia_links.txt', 'rt') as f:
-        links = [l.strip('\n') for l in f.readlines()]
-
-    # Crawl with the links spider, given the links to crawl
-    yield processes[1].crawl(LinkSpider, start_urls=links)
-
-    # End the process once finished
-    reactor.stop()
+from P4.spiders.MainSpider import MainSpider
 
 
 def main():
-    # Create 2 processes, 1 for each spider
-    concordia_process = CrawlerProcess()
-    links_process = CrawlerProcess()
 
-    # Call the crawl callback function
-    crawl(concordia_process, links_process)
+    clear_folder()
 
-    # Actually run the twisted reactor
-    reactor.run()
+    # Create and run a CrawlerProcess based on the spider
+    process = CrawlerProcess()
+    process.crawl(MainSpider, max_files=10)
+    process.start()
+
+
+def clear_folder():
+    """
+    Delete the contents of html_files when starting the app.
+    """
+
+    for path in Path('html_files/').glob('*'):
+        if path.is_file():
+            path.unlink()
 
 
 if __name__ == '__main__':
