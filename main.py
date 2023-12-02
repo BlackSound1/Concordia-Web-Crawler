@@ -1,4 +1,5 @@
 import glob
+import sys
 from pathlib import Path
 
 from scrapy.crawler import CrawlerProcess
@@ -34,8 +35,12 @@ def main():
     process.start()
 
     # Create a TF-IDF vectorizer
-    vectorizer = TfidfVectorizer(max_df=0.1, min_df=5, stop_words='english', strip_accents='unicode', input='filename',
-                                 encoding="utf-8")
+    try:
+        vectorizer = TfidfVectorizer(max_df=0.5, min_df=5, stop_words='english', strip_accents='unicode',
+                                     input='filename', encoding="utf-8")
+    except ValueError as e:
+        print(f"\n {e} \n")
+        sys.exit(1)
 
     print("\n--- Vectorization ---")
 
@@ -49,8 +54,18 @@ def main():
     print("\n--- LSA Dimensionality Reduction ---")
 
     # Perform LSA dimensionality reduction
-    lsa = make_pipeline(TruncatedSVD(n_components=100), Normalizer(copy=False))
-    X_lsa = lsa.fit_transform(X_tfidf)
+    try:
+        lsa = make_pipeline(TruncatedSVD(n_components=100), Normalizer(copy=False))
+    except ValueError as e:
+        print(f"\n {e} \n")
+        sys.exit(1)
+
+    try:
+        X_lsa = lsa.fit_transform(X_tfidf)
+    except ValueError as e:
+        print(f"\n {e} \n")
+        sys.exit(1)
+
     explained_variance = lsa[0].explained_variance_ratio_.sum()
 
     print(f"\nExplained variance of the SVD step: {explained_variance * 100:.1f}%")
@@ -70,6 +85,7 @@ def main():
     order_centroids = original_space_centroids.argsort()[:, ::-1]
     terms = vectorizer.get_feature_names_out()
 
+    # Print most representative terms for each cluster
     for i in range(3):
         print(f"Cluster {i}: ", end="")
         for ind in order_centroids[i, :10]:
@@ -91,6 +107,7 @@ def main():
     order_centroids = original_space_centroids.argsort()[:, ::-1]
     terms = vectorizer.get_feature_names_out()
 
+    # Print most representative terms for each cluster
     for i in range(6):
         print(f"Cluster {i}: ", end="")
         for ind in order_centroids[i, :10]:
