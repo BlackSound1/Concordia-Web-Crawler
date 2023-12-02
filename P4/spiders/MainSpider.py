@@ -6,26 +6,74 @@ from re import sub
 import scrapy
 from scrapy.exceptions import CloseSpider
 from bs4 import BeautifulSoup, NavigableString
+from nltk import word_tokenize
+from nltk.corpus import stopwords
 
 
-def _clean_li(list_items: list) -> list:
-    # Keep only text list items, not ones that contain links, etc
-    list_items = [li for li in list_items if isinstance(li, NavigableString)]
-    # Clean list items of newlines
-    list_items = [sub(r'\n', ' ', li) for li in list_items]
-    # Clean list items of unnecessary whitespace
-    list_items = [sub(r'\s{2,}', ' ', li) for li in list_items]
-    # Remove more spaces
-    list_items = [li.strip() for li in list_items if li not in ['|']]
+# Get first 150 stopwords
+stopwords = list(stopwords.words('english'))[:150]
 
-    return list_items
+
+def _clean(string: str) -> str:
+    """
+    Given a string, clean it according to some rules.
+
+    :param string: The string to clean
+    :return: The cleaned string
+    """
+
+    # Remove punctuation and special characters
+    string = sub(r"[()<>{}\[\]!$=@&*-/|+.,:;`'?\"]+", ' ', string)
+
+    # Remove certain unicode control characters, as found in experiment
+    string = sub(r'\xa0|\x03|\x02|\x07|\x05|\xfc|\u007F', ' ', string)
+
+    # Remove multiple spaces
+    string = sub(r'\s{2,}', ' ', string)
+
+    # Tokenize string
+    tokenized = word_tokenize(string)
+
+    # Remove stopwords
+    no_stopwords = [t for t in tokenized if t not in stopwords]
+
+    # Remove numbers
+    no_nums = [t for t in no_stopwords if not t.isnumeric()]
+
+    # Lowercase
+    lowercase = [t.lower() for t in no_nums]
+
+    # Remove tokens that are of length 1
+    no_len_1 = [t for t in lowercase if len(t) != 1]
+
+    # Remove duplicates
+    no_dupes = {t for t in no_len_1}
+
+    # Join into single string
+    to_return = ' '.join(t for t in no_dupes)
+
+    # Remove surrounding spaces
+    to_return = to_return.strip()
+
+    # Ensure 1 space at the end
+    to_return = f"{to_return} "
+
+    return to_return
 
 
 def _fill_page_text(*list_of_lists: list) -> str:
+    """
+    Turn the given list of lists of page elements into a single string representing the page's content.
+
+    :param list_of_lists: The list of lists of page elements
+    :return: The single string representing the page's text
+    """
+
     page_text = ""
 
     for ls in list_of_lists:
         for item in ls:
+            item = _clean(item)
             page_text += f" {item}"
 
     return page_text
@@ -91,27 +139,18 @@ class MainSpider(scrapy.Spider):
 
             # Get all paragraph text
             paragraphs = [p.text for p in contents.body.find_all('p')]
-            paragraphs = [p for p in paragraphs if isinstance(p, NavigableString)]
-            paragraphs = [p for p in paragraphs if p not in [' ', "\xa0", '&nbsp;']]
-            paragraphs = [p.strip() for p in paragraphs]
-            paragraphs = [sub('\n', ' ', p) for p in paragraphs]
 
             # Get all headings by type
             headings_lists = [contents.body.find_all(h) for h in valid_tags[1:]]
 
             # Flatten the headings list, keeping only the text of each heading
             headings = [item.text for sublist in headings_lists for item in sublist]
-            headings = [h.strip() for h in headings]
-            headings = [h for h in headings if h not in ['\xa0']]
-            headings = [sub('\n', ' ', h) for h in headings]
-            # headings = [h for h in headings if isinstance(h, NavigableString)]
 
             # Get all divs with the 'body' class
             div_bodies = [d.text for d in contents.body.find_all('div', {'class': 'body'})]
 
             # Get all list items
             list_items = [li.text for li in contents.body.find_all('li')]
-            list_items = _clean_li(list_items)
 
             page_text = _fill_page_text(paragraphs, headings, div_bodies, list_items)
 
@@ -119,7 +158,6 @@ class MainSpider(scrapy.Spider):
             Path('text_files').mkdir(exist_ok=True, parents=True)
             with open(filename, 'wt', encoding='utf-8') as f:
                 f.writelines(page_text)
-            # Path(filename).write_bytes(response.body)
             self.log(f"Saved file: {filename}")
             self.num_files += 1
 
