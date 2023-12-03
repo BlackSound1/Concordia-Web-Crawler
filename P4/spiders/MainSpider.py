@@ -132,6 +132,9 @@ class MainSpider(scrapy.Spider):
             # This helps with file saving
             page = response.url.split('//')[-1].replace('/', '-')
 
+            # Replace invalid characters with a '-'
+            page = sub(r'[\\/:*?\"<>|]', '-', page)
+
             # Set the filename to save
             filename = f"text_files/{page}.txt"
 
@@ -184,6 +187,13 @@ class MainSpider(scrapy.Spider):
                            # If the link contains a '?' character, then it's an endpoint query. Too specific.
                            # Want new pages, not just query results from a single page. Reject
                            and '?' not in link
+
+                           # Don't consider links that contain certain words
+                           and "francais" not in link
+                           and "ucactualites" not in link
+                           and 'diplome' not in link
+                           and 'traduc' not in link
+                           and 'litterature' not in link
 
                            # If this link has an allowed TLD, Keep
                            and Path(link).suffix in allowed_TLDs]

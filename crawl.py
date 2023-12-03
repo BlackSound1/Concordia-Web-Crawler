@@ -8,7 +8,7 @@ from P4.spiders.MainSpider import MainSpider
 # Create an argument parser to let user decide how many files to download
 parser = ArgumentParser(description="Concordia Scraper")
 parser.add_argument('--num-files', '-n', type=int,
-                    help="The number of files to process", default=10, required=False)
+                    help="The number of files to process", default=100, required=False)
 
 
 def main():
