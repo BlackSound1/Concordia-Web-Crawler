@@ -27,9 +27,9 @@ def library_AFINN(clusters):
     afinn_lib = Afinn()
 
     for i, cluster in enumerate(clusters):
-        cluster = ' '.join(word for word in cluster)
+        cluster_to_score = ' '.join(word for word in cluster)
 
-        print(f"\tCluster {i}: {cluster}, Score: {afinn_lib.score(cluster)}\n")
+        print(f"\tCluster {i}: {cluster}, Score: {afinn_lib.score(cluster_to_score)}\n")
 
 
 def manual_AFINN(clusters):

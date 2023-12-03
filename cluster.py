@@ -17,7 +17,15 @@ parser = ArgumentParser(description="Concordia Clusterer")
 parser.add_argument('--num-files', '-n', type=int,
                     help="The number of files to process", required=False)
 
-stopwords = stopwords.words('english') + stopwords.words('french')
+# Create a custom stopwords list composed of all English and French stopwords, plus a list of other
+# stopwords found in experiment
+stopwords = (
+        stopwords.words('english') +
+        stopwords.words('french') +
+        ['etaient', 'etais', 'etait', 'etant', 'etante', 'etantes',
+         'etants', 'ete', 'etee', 'etees', 'etes', 'etiez', 'etions',
+         'eumes', 'eutes', 'fumes', 'futes', 'meme', 'co', 'ca', 'cu', 'el']
+)
 
 
 def main():
