@@ -1,20 +1,58 @@
 import glob
 
+from afinn import Afinn
+
 
 def main():
+    print('\n--- AFINN Sentiment Analysis ---\n')
+
     # Get all clusters from the files
     clusters = _get_clusters()
 
-    AFINN = get_AFINN()
+    print('\n\t~~~ Manual AFINN ~~~\n')
+
+    manual_AFINN(clusters)
+
+    print('\n\t~~~ Library AFINN ~~~\n')
+
+    library_AFINN(clusters)
+
+
+def library_AFINN(clusters):
+    """
+    Given a list of clusters, score them automatically by using the `afinn` library
+    :param clusters: The list of clusters to score
+    """
+
+    afinn_lib = Afinn()
 
     for i, cluster in enumerate(clusters):
-        print(f'\n--- CLUSTER {i} ---\n')
+        cluster = ' '.join(word for word in cluster)
 
-        print(f"Cluster: {cluster}, Score: {_score_cluster(cluster, AFINN)}")
+        print(f"\tCluster {i}: {cluster}, Score: {afinn_lib.score(cluster)}\n")
 
 
-def _score_cluster(cluster: list, AFINN: dict) -> float:
-    len_cluster = len(cluster)
+def manual_AFINN(clusters):
+    """
+    Given a list of clusters, score the manually using a custom algorithm
+
+    :param clusters: The list of clusters to score
+    """
+
+    for i, cluster in enumerate(clusters):
+        print(f"\tCluster {i}: {cluster}, Score: {_score_cluster_manual(cluster)}\n")
+
+
+def _score_cluster_manual(cluster: list) -> float:
+    """
+    Score a given cluster manually, using a custom algorithm
+
+    :param cluster: The cluster to give a sentiment score to. Negative numbers are negative and vice-versa
+    :return: The score for the cluster
+    """
+
+    # Get the AFINN dict from AFINN-111.txt
+    AFINN = get_AFINN()
 
     # The score for a cluster starts at 0, neutral sentiment
     cluster_score = 0
