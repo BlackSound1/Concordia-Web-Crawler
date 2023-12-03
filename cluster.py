@@ -1,6 +1,7 @@
 import glob
 import sys
 from argparse import ArgumentParser
+from pathlib import Path
 
 import numpy as np
 from sklearn.cluster import KMeans
@@ -89,11 +90,7 @@ def main():
     terms = vectorizer.get_feature_names_out()
 
     # Print most representative terms for each cluster
-    for i in range(3):
-        print(f"Cluster {i}: ", end="")
-        for ind in order_centroids[i, :10]:
-            print(f"{terms[ind]} ", end="")
-        print()
+    _save_clusters(order_centroids, terms, folder='clusters/k3/', k=3)
 
     print("\n--- K-Means (k=6) ---")
 
@@ -104,18 +101,36 @@ def main():
 
     print(f"\nNumber of elements assigned to each cluster (KMEANS 6): {cluster_sizes}")
 
-    # Compute top terms per cluster, when k=3
+    # Compute top terms per cluster, when k=6
     print("\nTop terms per cluster, when k=6:\n")
     original_space_centroids = lsa[0].inverse_transform(kmeans_6.cluster_centers_)
     order_centroids = original_space_centroids.argsort()[:, ::-1]
     terms = vectorizer.get_feature_names_out()
 
     # Print most representative terms for each cluster
-    for i in range(6):
+    _save_clusters(order_centroids, terms, folder='clusters/k6/', k=6)
+
+
+def _save_clusters(order_centroids: list, terms: list, folder: str, k: int) -> None:
+    """
+    Display and save the resulting clusters from K-Means clustering
+
+    :param order_centroids: The order centroids to base the clusters on
+    :param terms: The terms to base the clusters on
+    :param folder: The folder to save to
+    :param k: Whether k=3 or k=6
+    """
+
+    Path(folder).mkdir(parents=True, exist_ok=True)
+    for i in range(k):
+        cluster = []
         print(f"Cluster {i}: ", end="")
         for ind in order_centroids[i, :10]:
+            cluster.append(terms[ind])
             print(f"{terms[ind]} ", end="")
         print()
+        with open(f"{folder}cluster-{i}.txt", 'wt') as f:
+            f.write(' '.join(j for j in cluster))
 
 
 if __name__ == '__main__':

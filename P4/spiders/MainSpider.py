@@ -138,6 +138,7 @@ class MainSpider(scrapy.Spider):
             # Set the filename to save
             filename = f"text_files/{page}.txt"
 
+            # Set a list of valid HTML to tags to parse. This narrows the scope of the text
             valid_tags = ['p', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6']
 
             # Get all paragraph text

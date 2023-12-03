@@ -39,6 +39,10 @@ def _clear_folder():
         if path.is_file():
             path.unlink()
 
+    for path in Path('clusters/').glob('*'):
+        if path.is_file():
+            path.unlink()
+
 
 if __name__ == '__main__':
     main()
