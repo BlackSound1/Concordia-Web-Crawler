@@ -1,55 +1,50 @@
 import glob
 import sys
-from pathlib import Path
-
-from scrapy.crawler import CrawlerProcess
 from argparse import ArgumentParser
 
 import numpy as np
+from sklearn.cluster import KMeans
 from sklearn.decomposition import TruncatedSVD
 from sklearn.feature_extraction.text import TfidfVectorizer
-from sklearn.cluster import KMeans
 from sklearn.pipeline import make_pipeline
 from sklearn.preprocessing import Normalizer
 
-from P4.spiders.MainSpider import MainSpider
 
-# Create an argument parser to let user decide how many files to process
-parser = ArgumentParser(description="Concordia Scraper")
-parser.add_argument('--num-files', '-n', metavar='n', type=int,
+# Create an argument parser to let user decide how many downloaded files to process
+parser = ArgumentParser(description="Concordia Clusterer")
+parser.add_argument('--num-files', '-n', type=int,
                     help="The number of files to process", default=10, required=False)
-parser.add_argument('--crawl', '-c', type=bool, help="Whether to run the web crawler",
-                    default=False, required=False)
 
 
 def main():
     # Parse the command-line arguments passed to this script, if any
     args = parser.parse_args()
 
-    # Clear the file folder(s)
-    clear_folder()
-
-    print("\n--- Web Crawling ---\n")
-
-    # Create and run a CrawlerProcess based on the spider
-    process = CrawlerProcess()
-    process.crawl(MainSpider, max_files=args.num_files)
-    process.start()
+    print("\n--- Vectorization ---")
 
     # Create a TF-IDF vectorizer
     try:
         vectorizer = TfidfVectorizer(max_df=0.5, min_df=5, stop_words='english', strip_accents='unicode',
                                      input='filename', encoding="utf-8")
     except ValueError as e:
-        print(f"\n {e} \n")
-        sys.exit(1)
+        tb = sys.exc_info()[2]
+        print(f"\nVECTORIZATION ERROR: {e.with_traceback(tb)} \n")
+        return
 
-    print("\n--- Vectorization ---")
+    # Get the number of files to process
+    ALL_FILES = glob.glob('text_files/*')
+    if args.num_files > len(ALL_FILES):
+        print(f"\nYou entered {args.num_files} files, but only {len(ALL_FILES)} are present. Will process all of them\n")
+        num_files = len(ALL_FILES)
+    else:
+        num_files = args.num_files
 
     # Vectorize the text files
-    X_tfidf = vectorizer.fit_transform(glob.glob('text_files/*'))
+    X_tfidf = vectorizer.fit_transform(ALL_FILES[:num_files])
 
-    print(f"\nn_samples: {X_tfidf.shape[0]}, n_features: {X_tfidf.shape[1]}")
+    n_samples = X_tfidf.shape[0]
+    n_features = X_tfidf.shape[1]
+    print(f"\nn_samples: {n_samples}, n_features: {n_features}")
 
     print(f"\n{X_tfidf.nnz / np.prod(X_tfidf.shape):.3f}")
 
@@ -57,16 +52,19 @@ def main():
 
     # Perform LSA dimensionality reduction
     try:
-        lsa = make_pipeline(TruncatedSVD(n_components=100), Normalizer(copy=False))
+        lsa = make_pipeline(TruncatedSVD(n_components=n_features if n_features < 100 else 100),
+                            Normalizer(copy=False))
     except ValueError as e:
-        print(f"\n {e} \n")
-        sys.exit(1)
+        tb = sys.exc_info()[2]
+        print(f"\nLSA PIPELINE ERROR: {e.with_traceback(tb)} \n")
+        return
 
     try:
         X_lsa = lsa.fit_transform(X_tfidf)
     except ValueError as e:
-        print(f"\n {e} \n")
-        sys.exit(1)
+        tb = sys.exc_info()[2]
+        print(f"\nLSA FIT TRANSFORM ERROR:  {e.with_traceback(tb)} \n")
+        return
 
     explained_variance = lsa[0].explained_variance_ratio_.sum()
 
@@ -115,20 +113,6 @@ def main():
         for ind in order_centroids[i, :10]:
             print(f"{terms[ind]} ", end="")
         print()
-
-
-def clear_folder():
-    """
-    Delete the contents of html_files when starting the app.
-    """
-
-    # for path in Path('html_files/').glob('*'):
-    #     if path.is_file():
-    #         path.unlink()
-
-    for path in Path('text_files/').glob('*'):
-        if path.is_file():
-            path.unlink()
 
 
 if __name__ == '__main__':
