@@ -8,12 +8,15 @@ from sklearn.decomposition import TruncatedSVD
 from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.pipeline import make_pipeline
 from sklearn.preprocessing import Normalizer
+from nltk.corpus import stopwords
 
 
 # Create an argument parser to let user decide how many downloaded files to process
 parser = ArgumentParser(description="Concordia Clusterer")
 parser.add_argument('--num-files', '-n', type=int,
-                    help="The number of files to process", default=10, required=False)
+                    help="The number of files to process", required=False)
+
+stopwords = stopwords.words('english') + stopwords.words('french')
 
 
 def main():
@@ -24,7 +27,7 @@ def main():
 
     # Create a TF-IDF vectorizer
     try:
-        vectorizer = TfidfVectorizer(max_df=0.5, min_df=5, stop_words='english', strip_accents='unicode',
+        vectorizer = TfidfVectorizer(max_df=0.5, min_df=5, stop_words=stopwords, strip_accents='unicode',
                                      input='filename', encoding="utf-8")
     except ValueError as e:
         tb = sys.exc_info()[2]
@@ -33,7 +36,7 @@ def main():
 
     # Get the number of files to process
     ALL_FILES = glob.glob('text_files/*')
-    if args.num_files > len(ALL_FILES):
+    if args.num_files is None or args.num_files > len(ALL_FILES):
         print(f"\nYou entered {args.num_files} files, but only {len(ALL_FILES)} are present. Will process all of them\n")
         num_files = len(ALL_FILES)
     else:
