@@ -136,7 +136,7 @@ def _save_clusters(order_centroids: list, terms: list, folder: str, k: int) -> N
         cluster = []
         # print(f"Cluster {i} sample: ", end="")
         print(f"Cluster {i}: ", end="")
-        for ind in order_centroids[i, :10]:
+        for ind in order_centroids[i, :20]:
             cluster.append(terms[ind])
             print(f"{terms[ind]} ", end="")
         # print("...")
