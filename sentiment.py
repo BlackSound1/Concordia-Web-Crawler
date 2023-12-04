@@ -94,14 +94,22 @@ def get_AFINN() -> dict:
     :return: The dict from of the AFINN-111 lexicon
     """
 
-    afinn = {}
+    afinn = {}  # Create an AFINN dict to be filled
 
+    # Get the contents of the AFINN-111 file
     with open('AFINN-111.txt', 'rt') as f:
         contents = f.readlines()
 
+    # Go through each line in the file
     for line in contents:
-        line = line.strip().replace('\t', ' ').split(' ')
-        afinn[line[0]] = line[1]
+        # Split the line based on the tab character
+        line = line.split('\t')
+
+        # Make the numeric portion no longer have a newline character
+        line[1] = line[1].strip()
+
+        # For the AFINN dictionary, set the key to be the term and the value to be its numeric score, as an int
+        afinn[line[0]] = int(line[1])
 
     return afinn
 
