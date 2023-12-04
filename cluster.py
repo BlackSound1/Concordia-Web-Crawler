@@ -11,7 +11,6 @@ from sklearn.pipeline import make_pipeline
 from sklearn.preprocessing import Normalizer
 from nltk.corpus import stopwords
 
-
 # Create an argument parser to let user decide how many downloaded files to process
 parser = ArgumentParser(description="Concordia Clusterer")
 parser.add_argument('--num-files', '-n', type=int,
@@ -46,7 +45,8 @@ def main():
     # Get the number of files to process
     ALL_FILES = glob.glob('text_files/*')
     if args.num_files is None or args.num_files > len(ALL_FILES):
-        print(f"\nYou entered {args.num_files} files, but only {len(ALL_FILES)} are present. Will process all of them\n")
+        print(
+            f"\nYou entered {args.num_files} files, but only {len(ALL_FILES)} are present. Will process all of them\n")
         num_files = len(ALL_FILES)
     else:
         num_files = args.num_files
@@ -133,21 +133,27 @@ def _save_clusters(order_centroids: list, terms: list, folder: str, k: int) -> N
 
     # Loop through each cluster
     for i in range(k):
-        # Display a sample of this full cluster to the console. Only the first 10 items
-        print(f"Cluster {i} sample: ", end="")
+        cluster = []
+        # print(f"Cluster {i} sample: ", end="")
+        print(f"Cluster {i}: ", end="")
         for ind in order_centroids[i, :10]:
+            cluster.append(terms[ind])
             print(f"{terms[ind]} ", end="")
+        # print("...")
         print()
 
-        cluster = []  # Create an empty list for this full cluster
-
-        # Add to the empty list each element in the full cluster
-        for ind in order_centroids[i]:
-            cluster.append(terms[ind])
-
-        # Save entire cluster to file for sentiment analysis later
         with open(f"{folder}cluster-{i}.txt", 'wt') as f:
             f.write(' '.join(j for j in cluster))
+
+        # cluster = []  # Create an empty list for this full cluster
+        #
+        # # Add to the empty list each element in the full cluster
+        # for ind in order_centroids[i]:
+        #     cluster.append(terms[ind])
+        #
+        # # Save entire cluster to file for sentiment analysis later
+        # with open(f"{folder}cluster-{i}.txt", 'wt') as f:
+        #     f.write(' '.join(j for j in cluster))
 
 
 if __name__ == '__main__':
