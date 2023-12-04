@@ -59,7 +59,7 @@ def _score_cluster_manual(cluster: list) -> float:
 
     for word in cluster:
         # Try to find the word in the lexicon. If not found, score is 0
-        word_score = int(AFINN.get(word, 0))
+        word_score = float(AFINN.get(word, 0.0))
 
         # Modify the overall cluster score by the score for this word
         cluster_score += word_score

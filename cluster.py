@@ -36,7 +36,7 @@ def main():
 
     # Create a TF-IDF vectorizer
     try:
-        vectorizer = TfidfVectorizer(max_df=0.5, min_df=5, stop_words=stopwords, strip_accents='unicode',
+        vectorizer = TfidfVectorizer(max_df=0.5, min_df=0.1, stop_words=stopwords, strip_accents='unicode',
                                      input='filename', encoding="utf-8")
     except ValueError as e:
         tb = sys.exc_info()[2]
