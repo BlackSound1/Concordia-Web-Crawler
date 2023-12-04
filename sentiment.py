@@ -18,18 +18,29 @@ def main():
     library_AFINN(clusters)
 
 
-def library_AFINN(clusters):
+def library_AFINN(clusters, use_111: bool = False):
     """
     Given a list of clusters, score them automatically by using the `afinn` library
+
     :param clusters: The list of clusters to score
+    :param use_111: Whether to use `AFINN-111.txt` instead of the libraries default `AFINN-en-165.txt`
     """
 
-    afinn_lib = Afinn()
+    afinn_lib = Afinn()  # Define the AFINN object from the library
 
+    # The library uses AFINN-en-165.txt instead of AFINN-111.txt. Can switch between them here
+    if use_111:
+        afinn_lib.setup_from_file('AFINN-111.txt')
+
+    # Loop through each cluster
     for i, cluster in enumerate(clusters):
+        # Combine the cluster into a single string
         cluster_to_score = ' '.join(word for word in cluster)
 
-        print(f"\tCluster {i}: {cluster}  |  Score: {afinn_lib.score(cluster_to_score)}\n")
+        # Calculate the score
+        score = afinn_lib.score(cluster_to_score)
+
+        print(f"\tCluster {i}: {cluster}  |  Score: {score}\n")
 
 
 def manual_AFINN(clusters):
