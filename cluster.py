@@ -129,14 +129,23 @@ def _save_clusters(order_centroids: list, terms: list, folder: str, k: int) -> N
     :param k: Whether k=3 or k=6
     """
 
-    Path(folder).mkdir(parents=True, exist_ok=True)
+    Path(folder).mkdir(parents=True, exist_ok=True)  # Make sure path to cluster files exists
+
+    # Loop through each cluster
     for i in range(k):
-        cluster = []
-        print(f"Cluster {i}: ", end="")
+        # Display a sample of this full cluster to the console. Only the first 10 items
+        print(f"Cluster {i} sample: ", end="")
         for ind in order_centroids[i, :10]:
-            cluster.append(terms[ind])
             print(f"{terms[ind]} ", end="")
         print()
+
+        cluster = []  # Create an empty list for this full cluster
+
+        # Add to the empty list each element in the full cluster
+        for ind in order_centroids[i]:
+            cluster.append(terms[ind])
+
+        # Save entire cluster to file for sentiment analysis later
         with open(f"{folder}cluster-{i}.txt", 'wt') as f:
             f.write(' '.join(j for j in cluster))
 
