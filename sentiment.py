@@ -29,7 +29,7 @@ def library_AFINN(clusters):
     for i, cluster in enumerate(clusters):
         cluster_to_score = ' '.join(word for word in cluster)
 
-        print(f"\tCluster {i}: {cluster}, Score: {afinn_lib.score(cluster_to_score)}\n")
+        print(f"\tCluster {i}: {cluster}  |  Score: {afinn_lib.score(cluster_to_score)}\n")
 
 
 def manual_AFINN(clusters):
@@ -40,7 +40,7 @@ def manual_AFINN(clusters):
     """
 
     for i, cluster in enumerate(clusters):
-        print(f"\tCluster {i}: {cluster}, Score: {_score_cluster_manual(cluster)}\n")
+        print(f"\tCluster {i}: {cluster}  |  Score: {_score_cluster_manual(cluster)}\n")
 
 
 def _score_cluster_manual(cluster: list) -> float:
