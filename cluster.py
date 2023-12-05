@@ -142,12 +142,12 @@ def _save_clusters(order_centroids: list, terms: list, folder: str, k: int) -> N
     for i in range(k):
         cluster = []
         # print(f"Cluster {i} sample: ", end="")
-        print(f"Cluster {i}: ", end="")
+        print(f"Cluster {i}: [", end="")
         for ind in order_centroids[i, :20]:
             cluster.append(terms[ind])
-            print(f"{terms[ind]} ", end="")
+            print(f"{terms[ind]}, ", end="")
         # print("...")
-        print()
+        print(']')
 
         with open(f"{folder}cluster-{i}.txt", 'wt') as f:
             f.write(' '.join(j for j in cluster))

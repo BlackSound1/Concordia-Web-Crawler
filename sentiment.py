@@ -9,11 +9,11 @@ def main():
     # Get all clusters from the files
     clusters = _get_clusters()
 
-    print('\n\t~~~ Manual AFINN ~~~\n')
+    print('\n~~~ Manual AFINN ~~~\n')
 
     manual_AFINN(clusters)
 
-    print('\n\t~~~ Library AFINN ~~~\n')
+    print('\n~~~ Library AFINN ~~~\n')
 
     library_AFINN(clusters)
 
@@ -43,7 +43,7 @@ def library_AFINN(clusters, use_111: bool = False):
         # Calculate the score
         score = afinn_lib.score(cluster_to_score)
 
-        print(f"\tCluster {i}: {cluster}  |  Score: {score}\n")
+        print(f"Cluster {i}: {cluster}  |  Score: {score}\n")
 
 
 def manual_AFINN(clusters):
@@ -54,7 +54,7 @@ def manual_AFINN(clusters):
     """
 
     for i, cluster in enumerate(clusters):
-        print(f"\tCluster {i}: {cluster}  |  Score: {_score_cluster_manual(cluster)}\n")
+        print(f"Cluster {i}: {cluster}  |  Score: {_score_cluster_manual(cluster)}\n")
 
 
 def _score_cluster_manual(cluster: list) -> float:
