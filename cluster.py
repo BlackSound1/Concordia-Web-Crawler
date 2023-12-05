@@ -65,7 +65,7 @@ def main():
     n_features = X_tfidf.shape[1]
     print(f"\nn_samples: {n_samples}, n_features: {n_features}")
 
-    print(f"\n{X_tfidf.nnz / np.prod(X_tfidf.shape):.3f}")
+    print(f"\nSparsity of the TF-IDF matrix (non-zero entries / all entries): {X_tfidf.nnz / np.prod(X_tfidf.shape):.3f}")
 
     print("\n--- LSA Dimensionality Reduction ---")
 
