@@ -20,7 +20,8 @@ def main():
 
     print("\n--- Web Crawling ---\n")
 
-    # Create and run a CrawlerProcess based on the spider
+    # Create and run a CrawlerProcess based on the spider. Inspired by: https://stackoverflow.com/a/31374345
+    # Using Scrapy version 2.8.0 https://github.com/scrapy/scrapy
     process = CrawlerProcess()
     process.crawl(MainSpider, max_files=args.num_files)
     process.start()
@@ -28,7 +29,7 @@ def main():
 
 def _clear_folder():
     """
-    Delete the contents of html_files when starting the app.
+    Delete the contents of necessary folders when starting the app.
     """
 
     for path in Path('text_files/').glob('*'):

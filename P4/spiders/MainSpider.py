@@ -5,7 +5,7 @@ from re import sub
 
 import scrapy
 from scrapy.exceptions import CloseSpider
-from bs4 import BeautifulSoup, NavigableString
+from bs4 import BeautifulSoup
 from nltk import word_tokenize
 from nltk.corpus import stopwords
 

@@ -20,7 +20,9 @@ def main():
 
 def library_AFINN(clusters, use_111: bool = False):
     """
-    Given a list of clusters, score them automatically by using the `afinn` library
+    Given a list of clusters, score them automatically by using the `afinn` library.
+
+    Uses AFINN 0.1.0 https://github.com/fnielsen/afinn.
 
     :param clusters: The list of clusters to score
     :param use_111: Whether to use `AFINN-111.txt` instead of the libraries default `AFINN-en-165.txt`

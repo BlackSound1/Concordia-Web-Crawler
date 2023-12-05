@@ -31,6 +31,8 @@ def main():
     """
     Note that this module is heavily inspired by
     https://scikit-learn.org/stable/auto_examples/text/plot_document_clustering.html
+
+    Using Sklearn 1.3.0 https://github.com/scikit-learn/scikit-learn
     """
 
     # Parse the command-line arguments passed to this script, if any
