@@ -26,7 +26,8 @@ def library_AFINN(clusters, use_111: bool = False):
     :param use_111: Whether to use `AFINN-111.txt` instead of the libraries default `AFINN-en-165.txt`
     """
 
-    afinn_lib = Afinn()  # Define the AFINN object from the library
+    # Define the AFINN object from the library. I use the latest version from https://github.com/fnielsen/afinn
+    afinn_lib = Afinn()
 
     # The library uses AFINN-en-165.txt instead of AFINN-111.txt. Can switch between them here
     if use_111:

@@ -28,6 +28,11 @@ stopwords = (
 
 
 def main():
+    """
+    Note that this module is heavily inspired by
+    https://scikit-learn.org/stable/auto_examples/text/plot_document_clustering.html
+    """
+
     # Parse the command-line arguments passed to this script, if any
     args = parser.parse_args()
 

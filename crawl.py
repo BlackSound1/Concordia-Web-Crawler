@@ -31,10 +31,6 @@ def _clear_folder():
     Delete the contents of html_files when starting the app.
     """
 
-    # for path in Path('html_files/').glob('*'):
-    #     if path.is_file():
-    #         path.unlink()
-
     for path in Path('text_files/').glob('*'):
         if path.is_file():
             path.unlink()
