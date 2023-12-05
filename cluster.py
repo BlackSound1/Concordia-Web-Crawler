@@ -53,7 +53,7 @@ def main():
     ALL_FILES = glob.glob('text_files/*')
     if args.num_files is None or args.num_files > len(ALL_FILES):
         print(
-            f"\nYou entered {args.num_files} files, but only {len(ALL_FILES)} are present. Will process all of them\n")
+            f"\nYou entered {args.num_files} files, but {len(ALL_FILES)} are present. Will process all of them\n")
         num_files = len(ALL_FILES)
     else:
         num_files = args.num_files
