@@ -1,4 +1,6 @@
-# COMP479P4
+# Concordia Web Crawler
+
+An app for scraping the Concordia University website to perform sentiment analysis on the scraped documents.
 
 <hr />
 
@@ -21,13 +23,13 @@ The Scikit-learn 1.3.0 library was sourced from: https://anaconda.org/conda-forg
 2. Create a virtual environment with:
 
     ```shell
-    $ python -m venv COMP479
+    $ python -m venv .venv
     ```
 
 3. Activate it with:
 
     ```shell
-    $ source COMP479\Scripts\activate.bat
+    $ source .venv\Scripts\activate.bat
     ```
 
 4. Install the dependencies with:
