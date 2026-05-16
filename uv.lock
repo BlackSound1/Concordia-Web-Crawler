@@ -201,7 +201,7 @@ wheels = [
 
 [[package]]
 name = "concordia-web-crawler"
-version = "0.1.0"
+version = "1.0.1"
 source = { virtual = "." }
 dependencies = [
     { name = "afinn" },
