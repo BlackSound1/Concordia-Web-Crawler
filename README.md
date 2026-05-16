@@ -8,13 +8,9 @@ The `AFINN-111.txt` lexicon was sourced from: http://corpustext.com/reference/se
 
 The strategy for clustering was sourced from: https://scikit-learn.org/stable/auto_examples/text/plot_document_clustering.html.
 
-The Afinn 0.1 library was sourced from: https://github.com/fnielsen/afinn.
+Basic scrapy usage was inspired by: https://docs.scrapy.org/en/latest/intro/tutorial.html.
 
-The Scrapy 2.8.0 library was sourced from: https://github.com/scrapy/scrapy. Basic scrapy usage was inspired by:
-https://docs.scrapy.org/en/latest/intro/tutorial.html.
 Using Scrapy within Python was inspired by: https://stackoverflow.com/a/31374345.
-
-The Scikit-learn 1.3.0 library was sourced from: https://anaconda.org/conda-forge/scikit-learn.
 
 ## Setup
 
@@ -37,6 +33,16 @@ The Scikit-learn 1.3.0 library was sourced from: https://anaconda.org/conda-forg
     ```shell
     $ pip install -r requirements.txt
     ```
+
+If using UV, you instead do:
+
+```shell
+$ uv init
+```
+
+```shell
+$ uv add -r requirements.txt
+```
 
 ## To Run
 
