@@ -3,7 +3,7 @@ import glob
 from afinn import Afinn
 
 
-def main():
+def main() -> None:
     print("\n--- AFINN Sentiment Analysis ---\n")
 
     # Get all clusters from the files
@@ -18,7 +18,7 @@ def main():
     library_AFINN(clusters)
 
 
-def library_AFINN(clusters, use_111: bool = False):
+def library_AFINN(clusters: list[list[str]], use_111: bool = False) -> None:
     """
     Given a list of clusters, score them automatically by using the `afinn` library.
 
@@ -46,7 +46,7 @@ def library_AFINN(clusters, use_111: bool = False):
         print(f"Cluster {i}: {cluster}  |  Score: {score}\n")
 
 
-def manual_AFINN(clusters):
+def manual_AFINN(clusters: list[list[str]]) -> None:
     """
     Given a list of clusters, score the manually using a custom algorithm
 
@@ -57,7 +57,7 @@ def manual_AFINN(clusters):
         print(f"Cluster {i}: {cluster}  |  Score: {_score_cluster_manual(cluster)}\n")
 
 
-def _score_cluster_manual(cluster: list) -> float:
+def _score_cluster_manual(cluster: list[str]) -> float:
     """
     Score a given cluster manually, using a custom algorithm
 
@@ -81,34 +81,34 @@ def _score_cluster_manual(cluster: list) -> float:
     return cluster_score
 
 
-def _get_clusters():
+def _get_clusters() -> list[list[str]]:
     """
     Get all clusters from the files
 
     :return: The clusters
     """
 
-    clusters = []
+    clusters: list[list[str]] = []
 
     files = glob.glob("clusters/k6/*")
 
     for file in files:
         with open(file) as f:
-            cluster = f.read().split(" ")
+            cluster: list[str] = f.read().split(" ")
 
             clusters.append(cluster)
 
     return clusters
 
 
-def get_AFINN() -> dict:
+def get_AFINN() -> dict[str, int]:
     """
     Read the AFINN-111 lexicon and return the dict form of it
 
     :return: The dict from of the AFINN-111 lexicon
     """
 
-    afinn = {}  # Create an AFINN dict to be filled
+    afinn: dict[str, int] = {}  # Create an AFINN dict to be filled
 
     # Get the contents of the AFINN-111 file
     with open("AFINN-111.txt") as f:
