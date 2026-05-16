@@ -30,7 +30,7 @@ class P4SpiderMiddleware:
         # it has processed the response.
 
         # Must return an iterable of Request, or item objects.
-        for i in result:
+        for i in result:  # noqa: UP028
             yield i
 
     def process_spider_exception(self, response, exception, spider):
@@ -46,7 +46,7 @@ class P4SpiderMiddleware:
         # that it doesn’t have a response associated.
 
         # Must return only requests (not items).
-        for r in start_requests:
+        for r in start_requests:  # noqa: UP028
             yield r
 
     def spider_opened(self, spider):
