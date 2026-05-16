@@ -1,0 +1,14 @@
+[project]
+name = "concordia-web-crawler"
+version = "0.1.0"
+description = "An app for scraping the Concordia University website to perform sentiment analysis on the scraped documents."
+readme = "README.md"
+requires-python = ">=3.12"
+dependencies = [
+    "afinn>=0.1",
+    "beautifulsoup4>=4.14.3",
+    "nltk>=3.9.4",
+    "numpy>=2.4.5",
+    "scikit-learn>=1.8.0",
+    "scrapy>=2.15.2",
+]
