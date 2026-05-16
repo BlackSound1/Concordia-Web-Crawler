@@ -5,5 +5,5 @@
 
 
 class P4Pipeline:
-    def process_item(self, item, spider):
-        return item
+    def process_item(self, item, spider): # type: ignore  # noqa: ARG002
+        return item # type: ignore
