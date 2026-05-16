@@ -7,8 +7,7 @@ from P4.spiders.MainSpider import MainSpider
 
 # Create an argument parser to let user decide how many files to download
 parser = ArgumentParser(description="Concordia Scraper")
-parser.add_argument('--num-files', '-n', type=int,
-                    help="The number of files to process", default=100, required=False)
+parser.add_argument("--num-files", "-n", type=int, help="The number of files to process", default=100, required=False)
 
 
 def main():
@@ -30,14 +29,14 @@ def _clear_folders():
     Delete the contents of necessary folders when starting the app.
     """
 
-    for path in Path('text_files/').glob('*'):
+    for path in Path("text_files/").glob("*"):
         if path.is_file():
             path.unlink()
 
-    for path in Path('clusters/').glob('*'):
+    for path in Path("clusters/").glob("*"):
         if path.is_file():
             path.unlink()
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     main()

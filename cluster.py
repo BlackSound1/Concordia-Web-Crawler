@@ -4,26 +4,26 @@ from argparse import ArgumentParser
 from pathlib import Path
 
 import numpy as np
+from nltk.corpus import stopwords
 from sklearn.cluster import KMeans
 from sklearn.decomposition import TruncatedSVD
 from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.pipeline import make_pipeline
 from sklearn.preprocessing import Normalizer
-from nltk.corpus import stopwords
 
 # Create an argument parser to let user decide how many downloaded files to process
 parser = ArgumentParser(description="Concordia Clusterer")
-parser.add_argument('--num-files', '-n', type=int,
+parser.add_argument("--num-files", "-n", type=int,
                     help="The number of files to process", required=False)
 
 # Create a custom stopwords list composed of all English and French stopwords, plus a list of other
 # stopwords found in experiment
 stopwords = (
-        stopwords.words('english') +
-        stopwords.words('french') +
-        ['etaient', 'etais', 'etait', 'etant', 'etante', 'etantes',
-         'etants', 'ete', 'etee', 'etees', 'etes', 'etiez', 'etions',
-         'eumes', 'eutes', 'fumes', 'futes', 'meme', 'co', 'ca', 'cu', 'el']
+        stopwords.words("english") +
+        stopwords.words("french") +
+        ["etaient", "etais", "etait", "etant", "etante", "etantes",
+         "etants", "ete", "etee", "etees", "etes", "etiez", "etions",
+         "eumes", "eutes", "fumes", "futes", "meme", "co", "ca", "cu", "el"]
 )
 
 
@@ -42,15 +42,15 @@ def main():
 
     # Create a TF-IDF vectorizer
     try:
-        vectorizer = TfidfVectorizer(max_df=0.5, min_df=0.1, stop_words=stopwords, strip_accents='unicode',
-                                     input='filename', encoding="utf-8")
+        vectorizer = TfidfVectorizer(max_df=0.5, min_df=0.1, stop_words=stopwords, strip_accents="unicode",
+                                     input="filename", encoding="utf-8")
     except ValueError as e:
         tb = sys.exc_info()[2]
         print(f"\nVECTORIZATION ERROR: {e.with_traceback(tb)} \n")
         return
 
     # Get the number of files to process
-    ALL_FILES = glob.glob('text_files/*')
+    ALL_FILES = glob.glob("text_files/*")
     if args.num_files is None or args.num_files > len(ALL_FILES):
         print(
             f"\nYou entered {args.num_files} files, but {len(ALL_FILES)} are present. Will process all of them\n")
@@ -71,7 +71,7 @@ def main():
 
     # Perform LSA dimensionality reduction
     try:
-        lsa = make_pipeline(TruncatedSVD(n_components=n_features if n_features < 100 else 100),
+        lsa = make_pipeline(TruncatedSVD(n_components=min(100, n_features)),
                             Normalizer(copy=False))
     except ValueError as e:
         tb = sys.exc_info()[2]
@@ -105,7 +105,7 @@ def main():
     terms = vectorizer.get_feature_names_out()
 
     # Print most representative terms for each cluster
-    _save_clusters(order_centroids, terms, folder='clusters/k3/', k=3)
+    _save_clusters(order_centroids, terms, folder="clusters/k3/", k=3)
 
     print("\n--- K-Means (k=6) ---")
 
@@ -123,7 +123,7 @@ def main():
     terms = vectorizer.get_feature_names_out()
 
     # Print most representative terms for each cluster
-    _save_clusters(order_centroids, terms, folder='clusters/k6/', k=6)
+    _save_clusters(order_centroids, terms, folder="clusters/k6/", k=6)
 
 
 def _save_clusters(order_centroids: list, terms: list, folder: str, k: int) -> None:
@@ -147,10 +147,10 @@ def _save_clusters(order_centroids: list, terms: list, folder: str, k: int) -> N
             cluster.append(terms[ind])
             print(f"{terms[ind]}, ", end="")
         # print("...")
-        print(']')
+        print("]")
 
-        with open(f"{folder}cluster-{i}.txt", 'wt') as f:
-            f.write(' '.join(j for j in cluster))
+        with open(f"{folder}cluster-{i}.txt", "w") as f:
+            f.write(" ".join(j for j in cluster))
 
         # cluster = []  # Create an empty list for this full cluster
         #
@@ -163,5 +163,5 @@ def _save_clusters(order_centroids: list, terms: list, folder: str, k: int) -> N
         #     f.write(' '.join(j for j in cluster))
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     main()

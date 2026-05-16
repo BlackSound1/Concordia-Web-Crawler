@@ -4,16 +4,16 @@ from afinn import Afinn
 
 
 def main():
-    print('\n--- AFINN Sentiment Analysis ---\n')
+    print("\n--- AFINN Sentiment Analysis ---\n")
 
     # Get all clusters from the files
     clusters = _get_clusters()
 
-    print('\n~~~ Manual AFINN ~~~\n')
+    print("\n~~~ Manual AFINN ~~~\n")
 
     manual_AFINN(clusters)
 
-    print('\n~~~ Library AFINN ~~~\n')
+    print("\n~~~ Library AFINN ~~~\n")
 
     library_AFINN(clusters)
 
@@ -33,12 +33,12 @@ def library_AFINN(clusters, use_111: bool = False):
 
     # The library uses AFINN-en-165.txt instead of AFINN-111.txt. Can switch between them here
     if use_111:
-        afinn_lib.setup_from_file('AFINN-111.txt')
+        afinn_lib.setup_from_file("AFINN-111.txt")
 
     # Loop through each cluster
     for i, cluster in enumerate(clusters):
         # Combine the cluster into a single string
-        cluster_to_score = ' '.join(word for word in cluster)
+        cluster_to_score = " ".join(word for word in cluster)
 
         # Calculate the score
         score = afinn_lib.score(cluster_to_score)
@@ -90,11 +90,11 @@ def _get_clusters():
 
     clusters = []
 
-    files = glob.glob('clusters/k6/*')
+    files = glob.glob("clusters/k6/*")
 
     for file in files:
-        with open(file, 'rt') as f:
-            cluster = f.read().split(' ')
+        with open(file) as f:
+            cluster = f.read().split(" ")
 
             clusters.append(cluster)
 
@@ -111,13 +111,13 @@ def get_AFINN() -> dict:
     afinn = {}  # Create an AFINN dict to be filled
 
     # Get the contents of the AFINN-111 file
-    with open('AFINN-111.txt', 'rt') as f:
+    with open("AFINN-111.txt") as f:
         contents = f.readlines()
 
     # Go through each line in the file
     for line in contents:
         # Split the line based on the tab character
-        line = line.split('\t')
+        line = line.split("\t")
 
         # Make the numeric portion no longer have a newline character
         line[1] = line[1].strip()
@@ -128,5 +128,5 @@ def get_AFINN() -> dict:
     return afinn
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     main()
