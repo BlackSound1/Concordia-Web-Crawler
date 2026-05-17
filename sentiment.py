@@ -3,22 +3,22 @@ import glob
 from afinn import Afinn
 
 
-def main():
-    print('\n--- AFINN Sentiment Analysis ---\n')
+def main() -> None:
+    print("\n--- AFINN Sentiment Analysis ---\n")
 
     # Get all clusters from the files
     clusters = _get_clusters()
 
-    print('\n~~~ Manual AFINN ~~~\n')
+    print("\n~~~ Manual AFINN ~~~\n")
 
     manual_AFINN(clusters)
 
-    print('\n~~~ Library AFINN ~~~\n')
+    print("\n~~~ Library AFINN ~~~\n")
 
     library_AFINN(clusters)
 
 
-def library_AFINN(clusters, use_111: bool = False):
+def library_AFINN(clusters: list[list[str]], use_111: bool = False) -> None:
     """
     Given a list of clusters, score them automatically by using the `afinn` library.
 
@@ -33,12 +33,12 @@ def library_AFINN(clusters, use_111: bool = False):
 
     # The library uses AFINN-en-165.txt instead of AFINN-111.txt. Can switch between them here
     if use_111:
-        afinn_lib.setup_from_file('AFINN-111.txt')
+        afinn_lib.setup_from_file("AFINN-111.txt")
 
     # Loop through each cluster
     for i, cluster in enumerate(clusters):
         # Combine the cluster into a single string
-        cluster_to_score = ' '.join(word for word in cluster)
+        cluster_to_score = " ".join(word for word in cluster)
 
         # Calculate the score
         score = afinn_lib.score(cluster_to_score)
@@ -46,7 +46,7 @@ def library_AFINN(clusters, use_111: bool = False):
         print(f"Cluster {i}: {cluster}  |  Score: {score}\n")
 
 
-def manual_AFINN(clusters):
+def manual_AFINN(clusters: list[list[str]]) -> None:
     """
     Given a list of clusters, score the manually using a custom algorithm
 
@@ -57,7 +57,7 @@ def manual_AFINN(clusters):
         print(f"Cluster {i}: {cluster}  |  Score: {_score_cluster_manual(cluster)}\n")
 
 
-def _score_cluster_manual(cluster: list) -> float:
+def _score_cluster_manual(cluster: list[str]) -> float:
     """
     Score a given cluster manually, using a custom algorithm
 
@@ -81,43 +81,43 @@ def _score_cluster_manual(cluster: list) -> float:
     return cluster_score
 
 
-def _get_clusters():
+def _get_clusters() -> list[list[str]]:
     """
     Get all clusters from the files
 
     :return: The clusters
     """
 
-    clusters = []
+    clusters: list[list[str]] = []
 
-    files = glob.glob('clusters/k6/*')
+    files = glob.glob("clusters/k6/*")
 
     for file in files:
-        with open(file, 'rt') as f:
-            cluster = f.read().split(' ')
+        with open(file) as f:
+            cluster: list[str] = f.read().split(" ")
 
             clusters.append(cluster)
 
     return clusters
 
 
-def get_AFINN() -> dict:
+def get_AFINN() -> dict[str, int]:
     """
     Read the AFINN-111 lexicon and return the dict form of it
 
     :return: The dict from of the AFINN-111 lexicon
     """
 
-    afinn = {}  # Create an AFINN dict to be filled
+    afinn: dict[str, int] = {}  # Create an AFINN dict to be filled
 
     # Get the contents of the AFINN-111 file
-    with open('AFINN-111.txt', 'rt') as f:
+    with open("AFINN-111.txt") as f:
         contents = f.readlines()
 
     # Go through each line in the file
     for line in contents:
         # Split the line based on the tab character
-        line = line.split('\t')
+        line = line.split("\t")
 
         # Make the numeric portion no longer have a newline character
         line[1] = line[1].strip()
@@ -128,5 +128,5 @@ def get_AFINN() -> dict:
     return afinn
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     main()

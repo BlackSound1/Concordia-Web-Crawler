@@ -173,3 +173,6 @@ cython_debug/
 html_files/
 text_files/
 clusters/
+
+.vscode/
+.ruff_cache/
