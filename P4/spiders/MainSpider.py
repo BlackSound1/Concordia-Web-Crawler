@@ -1,6 +1,8 @@
 import logging
+from collections.abc import Generator
 from pathlib import Path
 from re import sub
+from typing import Any, ClassVar
 from urllib.parse import urljoin
 
 import scrapy
@@ -8,9 +10,11 @@ from bs4 import BeautifulSoup
 from nltk import word_tokenize
 from nltk.corpus import stopwords
 from scrapy.exceptions import CloseSpider
+from scrapy.http import Request, Response
+from scrapy.settings import BaseSettings
 
 # Get first 150 stopwords
-stopwords = list(stopwords.words("english"))[:150]
+my_stopwords = list(stopwords.words("english"))[:150]
 
 
 def _clean(string: str) -> str:
@@ -34,7 +38,7 @@ def _clean(string: str) -> str:
     tokenized = word_tokenize(string)
 
     # Remove stopwords
-    no_stopwords = [t for t in tokenized if t not in stopwords]
+    no_stopwords = [t for t in tokenized if t not in my_stopwords]
 
     # Remove numbers
     no_nums = [t for t in no_stopwords if not t.isnumeric()]
@@ -46,7 +50,7 @@ def _clean(string: str) -> str:
     no_len_1 = [t for t in lowercase if len(t) != 1]
 
     # Remove duplicates
-    no_dupes = {t for t in no_len_1}
+    no_dupes = set(no_len_1)
 
     # Join into single string
     to_return = " ".join(t for t in no_dupes)
@@ -55,12 +59,10 @@ def _clean(string: str) -> str:
     to_return = to_return.strip()
 
     # Ensure 1 space at the end
-    to_return = f"{to_return} "
-
-    return to_return
+    return f"{to_return} "
 
 
-def _fill_page_text(*list_of_lists: list) -> str:
+def _fill_page_text(*list_of_lists: list[str]) -> str:
     """
     Turn the given list of lists of page elements into a single string representing the page's content.
 
@@ -81,14 +83,14 @@ def _fill_page_text(*list_of_lists: list) -> str:
 class MainSpider(scrapy.Spider):
     name = "test"
 
-    allowed_domains = ["www.concordia.ca"]
-    start_urls = ["https://www.concordia.ca"]
+    allowed_domains: ClassVar = ["www.concordia.ca"]
+    start_urls: ClassVar = ["https://www.concordia.ca"]  # type: ignore
 
-    max_files = None
+    max_files = 0
     num_files = 0
 
     @classmethod
-    def update_settings(cls, settings):
+    def update_settings(cls, settings: BaseSettings):
         """
         Update the default settings for a Scrapy spider to ensure robots.txt is obeyed.
 
@@ -104,7 +106,7 @@ class MainSpider(scrapy.Spider):
         # but this adds a specific line to the Scrapy logs
         settings.set("ROBOTSTXT_OBEY", "True", priority="spider")
 
-    def parse(self, response, **kwargs):
+    def parse(self, response: Response) -> Generator[Request, Any, Any]:
         """
         Parse the links on a page, and save HTML files of those pages if the maximum number of files
         to download hasn't been reached.
@@ -126,7 +128,7 @@ class MainSpider(scrapy.Spider):
         contents = BeautifulSoup(response.body, features="html.parser", from_encoding="utf-8")
 
         # Only bother with English pages
-        if contents.html["lang"] != "fr":
+        if contents.html and contents.html["lang"] != "fr":
             # Get the actual page name, removing 'https://', replacing '/' characters for '-' characters.
             # This helps with file saving
             page = response.url.split("//")[-1].replace("/", "-")
@@ -140,20 +142,23 @@ class MainSpider(scrapy.Spider):
             # Set a list of valid HTML to tags to parse. This narrows the scope of the text
             valid_tags = ["p", "h1", "h2", "h3", "h4", "h5", "h6"]
 
+            # Use a safe reference to the body element (BeautifulSoup.body may be None)
+            body = contents.body or contents.find("body") or contents
+
             # Get all paragraph text
-            paragraphs = [p.text for p in contents.body.find_all("p")]
+            paragraphs = [p.text for p in body.find_all("p")]
 
             # Get all headings by type
-            headings_lists = [contents.body.find_all(h) for h in valid_tags[1:]]
+            headings_lists = [body.find_all(h) for h in valid_tags[1:]]
 
             # Flatten the headings list, keeping only the text of each heading
             headings = [item.text for sublist in headings_lists for item in sublist]
 
             # Get all divs with the 'body' class
-            div_bodies = [d.text for d in contents.body.find_all("div", {"class": "body"})]
+            div_bodies = [d.text for d in body.find_all("div", {"class": "body"})]
 
             # Get all list items
-            list_items = [li.text for li in contents.body.find_all("li")]
+            list_items = [li.text for li in body.find_all("li")]
 
             page_text = _fill_page_text(paragraphs, headings, div_bodies, list_items)
 
@@ -165,7 +170,7 @@ class MainSpider(scrapy.Spider):
             self.num_files += 1
 
             # Get all links on this page
-            links = [l["href"] for l in contents.body.find_all("a", href=True)]
+            links = [str(link["href"]) for link in body.find_all("a", href=True)]
             # links = response.css('a::attr(href)').getall()
             self.log(f"On {page}, found {len(links)} links in total", level=logging.INFO)
 
@@ -173,7 +178,7 @@ class MainSpider(scrapy.Spider):
             allowed_TLDs = [".html", ".htm", ".ca"]
 
             # From these links, get all links that follow certain rules
-            valid_links = [
+            valid_links: list[str] = [
                 urljoin(response.url, link)
                 for link in links
                 if

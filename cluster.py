@@ -13,12 +13,11 @@ from sklearn.preprocessing import Normalizer
 
 # Create an argument parser to let user decide how many downloaded files to process
 parser = ArgumentParser(description="Concordia Clusterer")
-parser.add_argument("--num-files", "-n", type=int,
-                    help="The number of files to process", required=False)
+parser.add_argument("--num-files", "-n", type=int, help="The number of files to process", required=False)
 
 # Create a custom stopwords list composed of all English and French stopwords, plus a list of other
 # stopwords found in experiment
-stopwords = (
+my_stopwords = (
         stopwords.words("english") +
         stopwords.words("french") +
         ["etaient", "etais", "etait", "etant", "etante", "etantes",
@@ -42,8 +41,9 @@ def main():
 
     # Create a TF-IDF vectorizer
     try:
-        vectorizer = TfidfVectorizer(max_df=0.5, min_df=0.1, stop_words=stopwords, strip_accents="unicode",
-                                     input="filename", encoding="utf-8")
+        vectorizer = TfidfVectorizer(
+            max_df=0.5, min_df=0.1, stop_words=my_stopwords, strip_accents="unicode", input="filename", encoding="utf-8"
+        )
     except ValueError as e:
         tb = sys.exc_info()[2]
         print(f"\nVECTORIZATION ERROR: {e.with_traceback(tb)} \n")
@@ -52,8 +52,7 @@ def main():
     # Get the number of files to process
     ALL_FILES = glob.glob("text_files/*")
     if args.num_files is None or args.num_files > len(ALL_FILES):
-        print(
-            f"\nYou entered {args.num_files} files, but {len(ALL_FILES)} are present. Will process all of them\n")
+        print(f"\nYou entered {args.num_files} files, but {len(ALL_FILES)} are present. Will process all of them\n")
         num_files = len(ALL_FILES)
     else:
         num_files = args.num_files
@@ -65,14 +64,15 @@ def main():
     n_features = X_tfidf.shape[1]
     print(f"\nn_samples: {n_samples}, n_features: {n_features}")
 
-    print(f"\nSparsity of the TF-IDF matrix (non-zero entries / all entries): {X_tfidf.nnz / np.prod(X_tfidf.shape):.3f}")
+    print(
+        f"\nSparsity of the TF-IDF matrix (non-zero entries / all entries): {X_tfidf.nnz / np.prod(X_tfidf.shape):.3f}"
+    )
 
     print("\n--- LSA Dimensionality Reduction ---")
 
     # Perform LSA dimensionality reduction
     try:
-        lsa = make_pipeline(TruncatedSVD(n_components=min(100, n_features)),
-                            Normalizer(copy=False))
+        lsa = make_pipeline(TruncatedSVD(n_components=min(100, n_features)), Normalizer(copy=False))
     except ValueError as e:
         tb = sys.exc_info()[2]
         print(f"\nLSA PIPELINE ERROR: {e.with_traceback(tb)} \n")
@@ -94,7 +94,7 @@ def main():
     # Perform K-Means where k=3
     kmeans_3 = KMeans(max_iter=100, n_clusters=3, random_state=3, n_init=1).fit(X_lsa)
 
-    cluster_ids, cluster_sizes = np.unique(kmeans_3.labels_, return_counts=True)
+    _, cluster_sizes = np.unique(kmeans_3.labels_, return_counts=True)
 
     print(f"\nNumber of elements assigned to each cluster (KMEANS 3): {cluster_sizes}")
 
@@ -112,7 +112,7 @@ def main():
     # Perform K-Means where k=3
     kmeans_6 = KMeans(max_iter=100, n_clusters=6, random_state=6, n_init=1).fit(X_lsa)
 
-    cluster_ids, cluster_sizes = np.unique(kmeans_6.labels_, return_counts=True)
+    _, cluster_sizes = np.unique(kmeans_6.labels_, return_counts=True)
 
     print(f"\nNumber of elements assigned to each cluster (KMEANS 6): {cluster_sizes}")
 
@@ -126,7 +126,7 @@ def main():
     _save_clusters(order_centroids, terms, folder="clusters/k6/", k=6)
 
 
-def _save_clusters(order_centroids: list, terms: list, folder: str, k: int) -> None:
+def _save_clusters(order_centroids: list, terms: np.ndarray, folder: str, k: int) -> None:
     """
     Display and save the resulting clusters from K-Means clustering
 
