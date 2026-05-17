@@ -1,6 +1,6 @@
 [project]
 name = "concordia-web-crawler"
-version = "1.0.1"
+version = "1.0.2"
 description = "An app for scraping the Concordia University website to perform sentiment analysis on the scraped documents."
 readme = "README.md"
 requires-python = ">=3.12"

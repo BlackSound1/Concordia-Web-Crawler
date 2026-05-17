@@ -44,6 +44,18 @@ $ uv init
 $ uv add -r requirements.txt
 ```
 
+You need to have the NLTK dataset to use this. I found that the easiest way to do this is via:
+
+```shell
+$ python -m nltk.downloader all
+```
+
+or
+
+```shell
+$ uv run nltk.downloader all
+```
+
 ## To Run
 
 First run the `crawl.py` module with:
