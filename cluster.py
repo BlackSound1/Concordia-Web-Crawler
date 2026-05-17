@@ -18,11 +18,11 @@ parser.add_argument("--num-files", "-n", type=int, help="The number of files to 
 # Create a custom stopwords list composed of all English and French stopwords, plus a list of other
 # stopwords found in experiment
 my_stopwords = (
-        stopwords.words("english") +
-        stopwords.words("french") +
-        ["etaient", "etais", "etait", "etant", "etante", "etantes",
-         "etants", "ete", "etee", "etees", "etes", "etiez", "etions",
-         "eumes", "eutes", "fumes", "futes", "meme", "co", "ca", "cu", "el"]
+    stopwords.words("english") +
+    stopwords.words("french") +
+    ["etaient", "etais", "etait", "etant", "etante", "etantes",
+        "etants", "ete", "etee", "etees", "etes", "etiez", "etions",
+        "eumes", "eutes", "fumes", "futes", "meme", "co", "ca", "cu", "el"]
 )
 
 
